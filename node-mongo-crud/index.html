@@ -15,6 +15,74 @@
         <input type="text" name="quantity" placeholder="quantity">
         <button type="submit">Add Product</button>
     </form>
+    <div id="container">
+    </div>
+    <div id="update">
+    </div>
 </body>
+
+<script>
+    const loadAllProduct = () => {
+        fetch('/products')
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('container');
+                container.innerHTML = '';
+                data.forEach(item => {
+                    const p = document.createElement('p');
+                    p.innerHTML = `<b>Name</b>: ${item.product} - <b>Price:</b> ${item.price} - <b>Quantity:</b> ${item.quantity} <button style="background-color:yellow;color:black;" onclick="loadProduct('${item._id}')">Edit</button>
+                    <button style="background-color:red;color:white;" onclick="deleteProduct(event,'${item._id}')">Delete</button>`;
+                    container.appendChild(p);
+                })
+            })
+    }
+
+    loadAllProduct();
+
+    const loadProduct = (id) => {
+        fetch(`/product/${id}`)
+            .then((res => res.json()))
+            .then(data => {
+                const updateContainer = document.getElementById('update');
+                updateContainer.innerHTML = `
+                                <h3>Update : ${data._id}</h3>
+                                Price : <input id="price" type="text" value="${data.price}"/></br><br/>
+                                Quantity : <input id="quantity" type="text" value="${data.quantity}"/></br></br>
+                                <button onclick="updateProduct('${data._id}')" style="background-color:green;color:white;">Update</button>`;
+            })
+    }
+
+    const updateProduct = (id) => {
+        const price = document.getElementById('price').value;
+        const quantity = document.getElementById('quantity').value;
+        const product = { id, price, quantity };
+
+        fetch(`/update/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(product)
+        })
+            .then(res => res.json())
+            .then(result => {
+                if(result){
+                    loadAllProduct();
+                     document.getElementById('update').innerHTML = '';
+                }
+            })
+    }
+
+    const deleteProduct = (e, id) => {
+        fetch(`/delete/${id}`, {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then((result => {
+                if (result) {
+                   // e.target.parentNode.style.display = 'none';
+                    loadAllProduct();
+                }
+            }));
+    }
+</script>
 
 </html>
