@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        li {
+            list-style-type: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="text-center mt-3">My Todo List</h1>
+    <form action="/addTodo" method="post" class="text-center mt-4">
+        <input type="text" name="todo" placeholder="write your todo" class="p-2" required>
+        <button type="submit" class="btn btn-primary">Add Todo</button>
+    </form>
+    <div class="">
+        <ul id="todo-container">
+        </ul>
+    </div>
+</body>
+
+<script>
+    const loadAllTodo = () => {
+        fetch('/todo')
+            .then(res => res.json())
+            .then(result => {
+                const container = document.getElementById('todo-container');
+                container.innerHTML = '';
+                result.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                                    ${item.todo}
+                                    <button class="btn btn-warning">Edit</button> 
+                                    <button class="btn btn-danger" onclick="deleteTodo('${item._id}')">Delete</button>`;
+                    li.classList = 'text-center text-left m-2';
+                    container.appendChild(li);
+                })
+            })
+    }
+    loadAllTodo();
+
+    const deleteTodo = (id) => {
+         fetch(`/delete/${id}`, {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then((result => {
+                if (result) {
+                    loadAllTodo();
+                }
+            }));
+    }
+</script>
+
+</html>
