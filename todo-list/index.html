@@ -21,6 +21,9 @@
         <input type="text" name="todo" placeholder="write your todo" class="p-2" required>
         <button type="submit" class="btn btn-primary">Add Todo</button>
     </form>
+    <div id="updateTodo">
+
+    </div>
     <div class="">
         <ul id="todo-container">
         </ul>
@@ -38,7 +41,7 @@
                     const li = document.createElement('li');
                     li.innerHTML = `
                                     ${item.todo}
-                                    <button class="btn btn-warning">Edit</button> 
+                                    <button class="btn btn-warning" onclick="loadTodo('${item._id}')">Edit</button> 
                                     <button class="btn btn-danger" onclick="deleteTodo('${item._id}')">Delete</button>`;
                     li.classList = 'text-center text-left m-2';
                     container.appendChild(li);
@@ -47,8 +50,38 @@
     }
     loadAllTodo();
 
+    const loadTodo = (id) => {
+        const update = document.getElementById('updateTodo');
+
+        fetch(`/loadTodo/${id}`)
+            .then(res => res.json())
+            .then(result => {
+                update.innerHTML = `<div class="text-center m-3">
+                            <input id="todo" type="text" name="todo" value="${result.todo}" class="p-2">
+                            <button class="btn btn-primary" onclick="updateTodo('${result._id}')">Update</button></div>`;
+            })
+    }
+
+    const updateTodo = (id) => {
+        const todo = document.getElementById('todo').value;
+        const todos = { id, todo };
+
+        fetch(`/update/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(todos)
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (result) {
+                    document.getElementById('updateTodo').innerHTML = '';
+                    loadAllTodo();
+                }
+            })
+    }
+
     const deleteTodo = (id) => {
-         fetch(`/delete/${id}`, {
+        fetch(`/delete/${id}`, {
             method: 'DELETE'
         })
             .then(res => res.json())

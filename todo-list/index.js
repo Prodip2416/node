@@ -28,6 +28,13 @@ client.connect((err) => {
             })
     })
 
+    app.get('/loadTodo/:id', (req, res) => {
+        todoCollection.find({ _id: ObjectID(req.params.id) })
+            .toArray((err, result) => {
+                res.send(result[0]);
+            })
+    });
+
     app.post('/addTodo', (req, res) => {
         const todo = req.body;
         todoCollection.insertOne(todo)
@@ -35,6 +42,16 @@ client.connect((err) => {
                 res.redirect('/');
             })
     })
+
+    app.patch('/update/:id', (req, res) => {
+        todoCollection.updateOne({ _id: ObjectID(req.params.id) },
+            {
+                $set: { todo: req.body.todo }
+            })
+            .then(result => {
+                res.send(result.modifiedCount > 0);
+            })
+    });
 
     app.delete('/delete/:id', (req, res) => {
         todoCollection.deleteOne({ _id: ObjectID(req.params.id) })
