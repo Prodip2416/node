@@ -23,7 +23,7 @@ const ShowBooking = () => {
             <h3>Your total booking {booking.length}</h3>
             {
                 booking.map(item =>
-                    <li>{item.name} booked, from : {(new Date(item.checkIn)).toDateString('dd/MM/yyyy')} to: {(new Date(item.checkOut)).toDateString('dd/MM/yyyy')}</li>
+                    <li key={item._id}>{item.name} booked, from : {(new Date(item.checkIn)).toDateString('dd/MM/yyyy')} to: {(new Date(item.checkOut)).toDateString('dd/MM/yyyy')}</li>
                 )
             }
         </div>
