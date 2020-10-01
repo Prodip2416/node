@@ -1,13 +1,9 @@
-.shop-container{
-    display: flex;  
+.item-container{
+    display: flex;
 }
-.cart{
-    position: fixed;
-    margin-left: 72%;
-    text-align: center;
-}
-.product{
+.product-container{
     width:70%;
-    border-right: 1px solid gray;
-    margin:5px;
+    margin-left: 20px;
+    margin-right: 5px;
+    border-right: 1px solid lightgray;
 }

@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import Cart from '../Cart/Cart';
-import { addToDatabaseCart, getDatabaseCart, removeFromDatabaseCart, processOrder } from '../../utilities/databaseManager';
+import React, { useState, useEffect } from 'react';
+import { getDatabaseCart } from '../../utilities/databaseManager';
 import fakeData from '../../fakeData/index';
-import Product from '../Product/Product';
-import ReviewDetail from '../ReviewDetail/ReviewDetail';
-import logo from '../../images/giphy.gif';
-import { useHistory } from 'react-router-dom';
+import ReviewItem from '../ReviewItem/ReviewItem';
+import Cart from '../cart/Cart';
+import { removeFromDatabaseCart, processOrder } from '../../utilities/databaseManager';
+import placeOrderImg from '../../images/giphy.gif'
 
-
-const Review = (props) => {
+const Review = () => {
     const [cart, setCart] = useState([]);
-    const [showLogo, setShowLogo] = useState(false);
-    const history = useHistory();
+    const [orderPlace, setOrderPlace] = useState(false);
 
     useEffect(() => {
         const getSavedItem = getDatabaseCart();
@@ -25,40 +22,37 @@ const Review = (props) => {
         setCart(totalProduct);
     }, [])
 
-    const removeProductHandle = (productKey) => {
-        const remainingProduct = cart.filter(item => item.key !== productKey);
-        setCart(remainingProduct);
+    const removeProduct = (productKey) => {
+        const product = cart.filter(item=> item.key !== productKey)
+        setCart(product);
         removeFromDatabaseCart(productKey);
     }
 
-    let status;
-    const proceedCheckoutHandle = () => {
-        // setCart([]);
-        // processOrder();
-        // setShowLogo(true);
-        history.push('/shipment');
+    const orderPlaceHandle = () =>{
+        setCart([]);
+        processOrder();
+        setOrderPlace(true);
     }
-    if (showLogo) {
-        status =<div style={{textAlign: 'center' }}>
-            <img src={logo} alt="" style={{ height: '400px' }} />
-        </div>;
+    let placeOrderStatus;
+    if (orderPlace) {
+        placeOrderStatus = <img src={placeOrderImg} alt="Order Place Done :) " />
     }
-
     return (
-        <div className="shop-container">
-            <div className="product">
-                {
-                    cart.map(item => <ReviewDetail key={item.key + Math.random()} product={item} removeProductHandle={removeProductHandle} />)
-                }
-                {
-                    status
-                }
-            </div>
-            <div className="cart">
-                <h1>This is review Cart</h1>
-                <Cart key={cart.key + Math.random()} cart={cart}>
-                    <button className="cart-btn" onClick={() => proceedCheckoutHandle()}> Proceed Checkout</button>
-                </Cart>
+        <div>
+            <div className="item-container">
+                <div className="product-container">
+                    {
+                        cart.map(item => <ReviewItem key={item.key} product={item} removeProduct={removeProduct}></ReviewItem>)
+                    }
+                    {
+                        placeOrderStatus
+                    }
+                </div>
+                <div className="cart-container">
+                    <Cart cart={cart}>
+                        <button className="cart-btn" onClick={orderPlaceHandle}>Place Order</button>
+                    </Cart>
+                </div>
             </div>
         </div>
     );

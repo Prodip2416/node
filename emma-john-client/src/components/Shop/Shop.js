@@ -1,64 +1,60 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import fakeData from '../../fakeData/index';
-import Product from '../Product/Product';
 import './Shop.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faCartPlus } from '@fortawesome/free-solid-svg-icons';
-import Cart from '../Cart/Cart';
+import Product from '../product/Product';
+import Cart from '../cart/Cart';
 import { addToDatabaseCart, getDatabaseCart } from '../../utilities/databaseManager';
 import { Link } from 'react-router-dom';
 
-
 const Shop = () => {
-    const data = fakeData.slice(0, 15);
+    const first10 = fakeData.slice(0, 10);
+    const [products, setProducts] = useState(first10);
     const [cart, setCart] = useState([]);
 
     useEffect(() => {
         const getSavedItem = getDatabaseCart();
         const productKeys = Object.keys(getSavedItem);
 
-        const totalProduct = productKeys.map(key => {
-            const product = fakeData.find(item => item.key === key);
+        const totalProduct = productKeys.map(key => { // map all the key
+            const product = fakeData.find(item => item.key === key); // get the product from key 
             product.quantity = getSavedItem[key];
             return product;
-        })
+        });
+
         setCart(totalProduct);
     }, [])
 
-    const addToCart = (product) => {
-        const sameProduct = cart.find(item => item.key === product.key);
+    const handleCartProduct = (product) => {
+        const productKey = product.key;
+        const sameProduct = cart.find(item => item.key === productKey);
         let count = 1;
-        let totalAddedProduct = [];
+        let totalCartProduct = [];
+
         if (sameProduct) {
-            count = sameProduct.quantity + 1
+            count = sameProduct.quantity + 1;
             sameProduct.quantity = count;
-            const othersProduct = cart.filter(item => item.key !== product.key);
-            totalAddedProduct = [...othersProduct, sameProduct];
+            const othersProduct = cart.filter(item => item.key !== productKey);
+            totalCartProduct = [...othersProduct, sameProduct];
         } else {
             product.quantity = 1;
-            totalAddedProduct = [...cart, product];
+            totalCartProduct = [...cart, product];
         }
 
-        setCart(totalAddedProduct);
+        setCart(totalCartProduct);
         addToDatabaseCart(product.key, count);
     }
 
     return (
-        <div className="shop-container">
-            <div className="product">
+        <div className="item-container">
+            <div className="product-container">
                 {
-                    data.map(item =>
-                        <Product key={item.key} product={item}>
-                            <button className="cart-btn" onClick={() => addToCart(item)}>
-                                <FontAwesomeIcon icon={faCartPlus} />  add to cart
-                            </button>
-                        </Product>)
+                    products.map(item => <Product key={item.key + Math.random()} product={item} handleCartProduct={handleCartProduct} showAddToCart={true} />)
                 }
             </div>
-            <div className="cart">
-                <Cart cart={cart}>
+            <div className="cart-container">
+                <Cart cart={cart} >
                     <Link to="/review">
-                        <button className="cart-btn">Order Review</button>
+                        <button className="cart-btn" >Order Review</button>
                     </Link>
                 </Cart>
             </div>

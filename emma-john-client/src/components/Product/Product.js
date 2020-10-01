@@ -1,28 +1,30 @@
 import React from 'react';
 import './Product.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
+// npm command for Font Awesome
+// npm i--save @fortawesome/fontawesome-svg-core \
+// @fortawesome/free-solid-svg-icons \
+// @fortawesome/react-fontawesome
 
 const Product = (props) => {
-    const { name, price, shipping, stock, seller, img, key, quantity } = props.product;
-
+    const { name, img, seller, price, stock, key } = props.product;
     return (
-        <div className="product-container mb-5">
-            <div className="product-img">
+        <div className="product">
+            <div style={{ marginRight: '5px' }}>
                 <img src={img} alt="" />
             </div>
-            <div className="ml-3 mr-1">
-                <Link to={"/product/" + key}>
-                    <p className="mt-4 text-info">{name}</p>
-                </Link>
-                <p>By : <small>{seller}</small> </p>
+            <div>
+                <h4 className="product-name"> <Link to={"/product/" + key}>{name}</Link> </h4>
+                <p><small>by: {seller}</small></p>
+                <p>${price}</p>
+                <p><small>only {stock} left in stock - order soon</small></p>
                 {
-                    props.showQuantity && <p>Quantity : {quantity}</p>
-                }
-                <h2 className="">${price}</h2>
-                <p>only {stock} left in stock - order soon</p>
-                {
-                    props.children
+                     props.showAddToCart &&
+                    <button className="cart-btn" onClick={() => { props.handleCartProduct(props.product) }}>
+                        <FontAwesomeIcon icon={faShoppingCart} /> add to cart</button>
                 }
             </div>
         </div>
