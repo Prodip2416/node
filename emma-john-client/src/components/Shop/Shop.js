@@ -1,60 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import fakeData from '../../fakeData/index';
 import './Shop.css';
 import Product from '../product/Product';
 import Cart from '../cart/Cart';
-import { addToDatabaseCart, getDatabaseCart } from '../../utilities/databaseManager';
+import { addToDatabaseCart } from '../../utilities/databaseManager';
+import { getDatabaseCart } from '../../utilities/databaseManager';
 import { Link } from 'react-router-dom';
 
+
 const Shop = () => {
-    const first10 = fakeData.slice(0, 10);
-    const [products, setProducts] = useState(first10);
-    const [cart, setCart] = useState([]);
+    //const totalShowingItem = fakeData.slice(0, 10);
+    const [itemCollection, setItemCollection] = useState([]);
+    const [cartItem, setCartItem] = useState([]);
 
     useEffect(() => {
-        const getSavedItem = getDatabaseCart();
-        const productKeys = Object.keys(getSavedItem);
-
-        const totalProduct = productKeys.map(key => { // map all the key
-            const product = fakeData.find(item => item.key === key); // get the product from key 
-            product.quantity = getSavedItem[key];
-            return product;
-        });
-
-        setCart(totalProduct);
+        fetch('http://localhost:5000/products')
+            .then(res => res.json())
+            .then(result => setItemCollection(result))
     }, [])
 
-    const handleCartProduct = (product) => {
-        const productKey = product.key;
-        const sameProduct = cart.find(item => item.key === productKey);
-        let count = 1;
-        let totalCartProduct = [];
+    useEffect(() => { // get previous cart item from local storage
+        const getSavedItem = getDatabaseCart(); // get from database/ LocalStorage
+        const productKeys = Object.keys(getSavedItem); // get the all key
 
-        if (sameProduct) {
+        if (itemCollection.length > 0){
+            const totalProduct = productKeys.map(key => { // map all the key
+                const product = itemCollection.find(item => item.key === key); // get the product from key 
+                product.quantity = getSavedItem[key];
+                return product;
+            })
+            setCartItem(totalProduct); // set to cart
+        }     
+    }, [itemCollection])
+
+    const handleCart = (product) => {
+        const addProductKey = product.key;
+        const sameProduct = cartItem.find(item => item.key === addProductKey);
+        let count = 1;
+        let totalCartItem = [];
+
+        if (sameProduct) { // if before add to this cart
             count = sameProduct.quantity + 1;
             sameProduct.quantity = count;
-            const othersProduct = cart.filter(item => item.key !== productKey);
-            totalCartProduct = [...othersProduct, sameProduct];
-        } else {
-            product.quantity = 1;
-            totalCartProduct = [...cart, product];
+            const othersProduct = cartItem.filter(item => item.key !== addProductKey)
+            totalCartItem = [...othersProduct, sameProduct];
+        } else { // if before not added to cart
+            product.quantity = count;
+            totalCartItem = [...cartItem, product];
         }
 
-        setCart(totalCartProduct);
-        addToDatabaseCart(product.key, count);
+        setCartItem(totalCartItem); // added to cart
+        addToDatabaseCart(product.key, count); // added to localStorage
     }
 
     return (
-        <div className="item-container">
-            <div className="product-container">
+        <div className="product-container">
+            <div className="item-container">
                 {
-                    products.map(item => <Product key={item.key + Math.random()} product={item} handleCartProduct={handleCartProduct} showAddToCart={true} />)
+                    itemCollection.map(item => <Product key={item.key} item={item} handleCart={handleCart} showAddToCart={true} />)
                 }
             </div>
-            <div className="cart-container">
-                <Cart cart={cart} >
+            <div>
+                <Cart cart={cartItem}>
                     <Link to="/review">
-                        <button className="cart-btn" >Order Review</button>
+                        <button>Review Your Order</button>
                     </Link>
                 </Cart>
             </div>

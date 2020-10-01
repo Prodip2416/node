@@ -2,20 +2,18 @@ import React from 'react';
 import './ReviewItem.css';
 
 const ReviewItem = (props) => {
-    const { name, img, seller, price, stock, key, quantity } = props.product;
-    console.log(props.product);
-
+    const { name, img, seller, price, quantity, key } = props.product;
     return (
-        <div className="product">
-            <div style={{ marginRight: '5px' }}>
+        <div className="item-cart">
+            <div className="img-container">
                 <img src={img} alt="" />
             </div>
             <div>
-                <h4 className="product-name"> {name}</h4>
-                <p><small>by: {seller}</small></p>
+                 <h4 className="product-title">{name}</h4>
+                <p>By : <small>{seller}</small></p>
+                <p>Price : ${price}</p>
                 <p>Quantity : {quantity}</p>
-                <p>${price}</p>
-                <button className="cart-btn" onClick={() => props.removeProduct(key)}>Remove</button>
+                <button onClick={() => props.removeProduct(key)}>Remove </button>
             </div>
         </div>
     );

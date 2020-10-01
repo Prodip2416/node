@@ -1,9 +1,24 @@
-.item-container{
-    display: flex;
-}
 .product-container{
-    width:70%;
-    margin-left: 20px;
-    margin-right: 5px;
-    border-right: 1px solid lightgray;
+    display:flex;
+}
+.item-container{
+    width: 75%;
+    border-right: 1px solid lightgrey;
+    margin:5px;
+    padding:5px;
+}
+.cart-header{
+    text-align: center;
+}
+button {
+    background-color: #f0c14b;
+    border-color: #a88734 #9c7e31 #846a29;
+    color: #111;
+    width: 200px;
+    height: 26px;
+    border-style: solid;
+    border-width: 1px;
+    cursor: pointer;
+    border-radius: 3px;
+    vertical-align: middle;
 }
