@@ -13,11 +13,12 @@ const uri = `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0-sh
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 client.connect(err => {
-    const productCollection = client.db(process.env.DB_NAME).collection(process.env.DB_COLLECTION);
+    const productCollection = client.db(process.env.DB_NAME).collection(process.env.DB_COLLECTION_PRODUCT);
+    const orderCollection = client.db(process.env.DB_NAME).collection(process.env.DB_COLLECTION_ORDER);
     // Delete all documents form the collection
-    //productCollection.deleteMany({}).then(res=>{console.log('deleted')})
-    
-    app.post('/addProduct', (req, res) => {
+    //productCollection.deleteMany({}).then(res=>{console.log('deleted')})  // Delete all
+
+    app.post('/addProduct', (req, res) => {// insert Many item
         const product = req.body;
         //console.log(product);
         productCollection.insertMany(product)
@@ -26,17 +27,33 @@ client.connect(err => {
             })
     });
 
-    app.get('/products', (req, res) => {
+    app.get('/products', (req, res) => { // get all product
         productCollection.find({})
             .toArray((err, documents) => {
                 res.send(documents);
             })
     });
 
-    app.get('/products/:key', (req, res) => {
-        productCollection.find({key: req.params.key})
+    app.get('/products/:key', (req, res) => { // get one product
+        productCollection.find({ key: req.params.key })
             .toArray((err, documents) => {
                 res.send(documents[0]);
+            })
+    });
+
+    app.post('/getProductsByKeys', (req, res) => { // Get some products
+        const productKeys = req.body;
+        productCollection.find({ key: { $in: productKeys } })
+            .toArray((err, documents) => {
+                res.send(documents);
+            })
+    });
+
+    app.post('/addOrder', (req, res) => {// insert one item
+        const order = req.body;
+        orderCollection.insertOne(order)
+            .then(result => {
+                res.send(result.insertedCount > 0);
             })
     });
 });
