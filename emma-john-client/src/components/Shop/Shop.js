@@ -22,15 +22,16 @@ const Shop = () => {
         const getSavedItem = getDatabaseCart(); // get from database/ LocalStorage
         const productKeys = Object.keys(getSavedItem); // get the all key
 
-        if (itemCollection.length > 0){
-            const totalProduct = productKeys.map(key => { // map all the key
-                const product = itemCollection.find(item => item.key === key); // get the product from key 
-                product.quantity = getSavedItem[key];
-                return product;
-            })
-            setCartItem(totalProduct); // set to cart
-        }     
-    }, [itemCollection])
+        fetch('http://localhost:5000/getProductsByKeys', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productKeys)
+        })
+            .then(res => res.json())
+            .then(result => setCartItem(result));  
+    }, [])
 
     const handleCart = (product) => {
         const addProductKey = product.key;

@@ -3,6 +3,7 @@ import fakeData from '../../fakeData/index.js';
 
 const Inventory = () => {
     const handleAddProduct = () => {
+        const product={};
         fetch('http://localhost:5000/addProduct', {
             method: 'POST',
             headers: {

@@ -16,14 +16,15 @@ const Review = () => {
         const getSavedItem = getDatabaseCart(); // get from database/ LocalStorage
         const productKeys = Object.keys(getSavedItem); // get the all key
 
-        const totalProduct = productKeys.map(key => { // map all the key
-            const product = fakeData.find(item => item.key === key); // get the product from key 
-            product.quantity = getSavedItem[key];
-            return product;
+        fetch('http://localhost:5000/getProductsByKeys', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productKeys)
         })
-
-        setCart(totalProduct); // set to cart
-
+            .then(res => res.json())
+            .then(result => setCart(result));
     }, [])
 
     const removeProduct = (productKey) => {
