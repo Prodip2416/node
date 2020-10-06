@@ -30,7 +30,7 @@ const Shop = () => {
             body: JSON.stringify(productKeys)
         })
             .then(res => res.json())
-            .then(result => setCartItem(result));  
+            .then(result => setCartItem(result));
     }, [])
 
     const handleCart = (product) => {
@@ -56,6 +56,10 @@ const Shop = () => {
     return (
         <div className="product-container">
             <div className="item-container">
+                {
+                    itemCollection.length === 0 && <div className="text-center"><img src="https://i.ibb.co/7WWY588/spinner-icon-gif-25.gif" alt="" />
+                        <img src="https://i.ibb.co/89JnSSp/1-9-EBHIOzh-E1-Xf-MYo-Kz1-Jcs-Q.gif" alt="" /></div>
+                }
                 {
                     itemCollection.map(item => <Product key={item.key} item={item} handleCart={handleCart} showAddToCart={true} />)
                 }
