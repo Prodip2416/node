@@ -28,9 +28,10 @@ client.connect(err => {
     });
 
     app.get('/products', (req, res) => { // get all product
-        productCollection.find({})
+        console.log(req.query.search)
+        productCollection.find({ name: { $regex: req.query.search } })
             .toArray((err, documents) => {
-                res.send(documents);
+                res.status(200).send(documents);
             })
     });
 
