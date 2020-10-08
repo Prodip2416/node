@@ -8,15 +8,20 @@ import { Link } from 'react-router-dom';
 
 
 const Shop = () => {
-    //const totalShowingItem = fakeData.slice(0, 10);
     const [itemCollection, setItemCollection] = useState([]);
     const [cartItem, setCartItem] = useState([]);
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
-        fetch('http://localhost:5000/products')
+        fetch('http://localhost:5000/products?search=' + search, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
             .then(res => res.json())
             .then(result => setItemCollection(result))
-    }, [])
+    }, [search])
 
     useEffect(() => { // get previous cart item from local storage
         const getSavedItem = getDatabaseCart(); // get from database/ LocalStorage
@@ -52,10 +57,14 @@ const Shop = () => {
         setCartItem(totalCartItem); // added to cart
         addToDatabaseCart(product.key, count); // added to localStorage
     }
+    const handleBlur = (e) => {
+        setSearch(e.target.value);
+    }
 
     return (
         <div className="product-container">
             <div className="item-container">
+                <div className="text-center"><input type="text" onBlur={handleBlur} placeholder="search product..." className="m-2 p-2" /></div>
                 {
                     itemCollection.length === 0 && <div className="text-center"><img src="https://i.ibb.co/7WWY588/spinner-icon-gif-25.gif" alt="" />
                         <img src="https://i.ibb.co/89JnSSp/1-9-EBHIOzh-E1-Xf-MYo-Kz1-Jcs-Q.gif" alt="" /></div>

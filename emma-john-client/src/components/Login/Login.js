@@ -5,6 +5,7 @@ import {
     signInWithEmailAndPassword, githubSignIn
 } from './LoginManager';
 import {UserContext} from '../../App';
+import * as firebase from "firebase/app";
 
 firebaseInitialized();
 
@@ -20,6 +21,7 @@ function Login() {
         googleSignIn()
             .then(res => {
                 handleResult(res, true);
+                getIdToken();
             })
     }
     const handleFBLogin = () => {
@@ -56,8 +58,14 @@ function Login() {
         e.preventDefault();
     }
 
+    const getIdToken = ()=>{
+        firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+            sessionStorage.setItem('token', idToken);
+        }).catch(function (error) {
+            // Handle error
+        });
+    }
     const handleResult = (res, redirect) => {
-        console.log(res)
         setUser(res);
         setLoggedInUser(res);
         if (redirect) {
